@@ -1,0 +1,9 @@
+out/
+*.class
+db.properties
+bikr.db
+.idea/
+.vscode/
+*.iml
+.DS_Store
+sources.txt
