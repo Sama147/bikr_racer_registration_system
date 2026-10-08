@@ -5,9 +5,9 @@ import bikr.model.User;
 import bikr.repository.UserRepository;
 import bikr.view.AuthView;
 
-/**
- * Handles login. All output goes through AuthView.
- */
+
+  //Handles login. All output goes through AuthView.
+
 public class AuthController {
 
     private final UserRepository userRepo;
@@ -18,7 +18,7 @@ public class AuthController {
         this.view     = view;
     }
 
-    /** Prompts for credentials and returns the logged-in Racer, or null on failure. */
+    //rompts for credentials and returns the logged-in Racer, or null on failure.
     public Racer login() {
         view.showLoginHeader();
         String email    = view.promptEmail();

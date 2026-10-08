@@ -8,10 +8,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
+/*
  * In-memory replacement for the SQLite database.
  * Holds every entity as a Java List and seeds the demo data on first load.
- *
  * Repositories read and write these lists. The rest of the app is unaware
  * that there's no actual database.
  */
@@ -39,14 +38,14 @@ public class DataStore {
     private static void seed() {
         LocalDate today = LocalDate.now();
 
-        // --- Racer 1: Nathaniel Lee — no license ---
+        //Racer 1: Nathaniel Lee — no license
         Racer nathaniel = new Racer("Nathaniel", "Lee", "nl@gmail.com", "000000001", "nl123");
         nathaniel.setUserId(nextUserId());
         nathaniel.setCategory(CategoryLevel.CAT_5);
         nathaniel.setCurrentPodiums(0);
         users.add(nathaniel);
 
-        // --- Racer 2: Illysia Lewis — expired license, CAT_2 ---
+        //Racer 2: Illysia Lewis — expired license, CAT_2
         Racer illysia = new Racer("Illysia", "Lewis", "il@gmail.com", "000000002", "il123");
         illysia.setUserId(nextUserId());
         illysia.setCategory(CategoryLevel.CAT_2);
@@ -56,7 +55,7 @@ public class DataStore {
         expired.setLicenseId(nextLicId());
         licenses.add(expired);
 
-        // --- Racer 3: Vivian Lawrence — valid license, CAT_2, 4 podiums ---
+        //Racer 3: Vivian Lawrence — valid license, CAT_2, 4 podiums
         Racer vivian = new Racer("Vivian", "Lawrence", "vl@gmail.com", "000000003", "vl123");
         vivian.setUserId(nextUserId());
         vivian.setCategory(CategoryLevel.CAT_2);
@@ -66,13 +65,19 @@ public class DataStore {
         valid.setLicenseId(nextLicId());
         licenses.add(valid);
 
-        // --- Organizer ---
+        //Racer 4: extra CAT_3 racer for seat-limit testing of race 4 - no license
+        Racer extra = new Racer("Ellie", "Ryerson", "er@gmail.com", "000000004", "er123");
+        extra.setUserId(nextUserId());
+        extra.setCategory(CategoryLevel.CAT_2);
+        extra.setCurrentPodiums(0);
+        users.add(extra);
+
+        //ORGANIZER
         Organizer amira = new Organizer("Amira", "Kareem", "amira@bikr.com", "100000001", "amira");
         amira.setUserId(nextUserId());
         users.add(amira);
 
-        // --- Races ---
-
+        //RACES
         // 1. Grand Canyonic — official, registration closed
         Race r1 = new RaceBuilder("Grand Canyonic heated wheels", today.plusDays(20))
                 .setType(RaceType.CRITERIUM)
@@ -122,7 +127,7 @@ public class DataStore {
                 .setMiles(45)
                 .setRoute("Maunakai")
                 .setLocation("Maunakai, Hawaii")
-                .setMaxRegistrations(15)
+                .setMaxRegistrations(2)
                 .setLastDayRegistrations(today.plusDays(59))
                 .build();
         r4.setRaceId(nextRaceId());

@@ -22,4 +22,12 @@ public class RegistrationRepository {
         }
         return n;
     }
+
+    //prevents a racer from registering in the same race twice
+    public boolean isAlreadyRegistered(int racerId, int raceId) {
+        for (Registration r : DataStore.registrations) {
+            if (r.getRacerId() == racerId && r.getRaceId() == raceId) return true;
+        }
+        return false;
+    }
 }

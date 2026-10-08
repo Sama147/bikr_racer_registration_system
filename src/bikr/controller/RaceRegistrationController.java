@@ -13,18 +13,15 @@ import bikr.view.RaceRegistrationView;
 import java.time.LocalDate;
 import java.util.List;
 
-/**
+/*
  * Handles race selection and registration eligibility.
- *
  * Check order:
  *   1. Registration deadline
  *   2. Official races require a valid license
  *   3. Category seat availability
- *
  * All I/O goes through RaceRegistrationView.
  */
 public class RaceRegistrationController {
-
     private final RaceRepository         raceRepo;
     private final RegistrationRepository regRepo;
     private final LicenseRepository      licenseRepo;
@@ -40,29 +37,34 @@ public class RaceRegistrationController {
         this.view        = view;
     }
 
-    /** Prints the race menu and returns the user's choice. */
+    // Prints the race menu and returns the user's choice.
     public int showRaceMenu() {
         return view.showRaceMenu(raceRepo.findAll());
     }
 
-    /** Maps a 1-based menu choice to a Race, or null if out of range. */
+    //Maps a 1-based menu choice to a Race, or null if out of range.
     public Race getRaceByMenuChoice(int choice) {
         List<Race> races = raceRepo.findAll();
         if (choice < 1 || choice > races.size()) return null;
         return races.get(choice - 1);
     }
 
-    /** Runs eligibility checks, then registers. Returns true if saved. */
+    //Runs eligibility checks, then registers. Returns true if saved.
     public boolean registerForRace(Racer racer, Race race) {
 
-        // --- 1. Deadline ---
+        //Already registered?
+        if (regRepo.isAlreadyRegistered(racer.getUserId(), race.getRaceId())) {
+            view.showAlreadyRegistered();
+            return false;
+        }
+        //Deadline
         LocalDate today = LocalDate.now();
         if (today.isAfter(race.getRaceLastDayRegistrations())) {
             view.showRegistrationClosed();
             return false;
         }
 
-        // --- 2. Official race -> license must exist and be valid ---
+        //official race where a license is a must and needs to be valid
         if (race.isRaceOfficiality()) {
             License license = licenseRepo.findByUserId(racer.getUserId());
 
@@ -71,9 +73,10 @@ public class RaceRegistrationController {
                     view.showCantRegister();
                     return false;
                 }
-                licenseRepo.insert(new License(racer.getUserId(), today.plusYears(1), racer.getCategory()));
                 racer.setCurrentPodiums(0);
                 racer.setCategory(CategoryLevel.CAT_5);
+                // Then create the license using the racer's current category
+                licenseRepo.insert(new License(racer.getUserId(), today.plusYears(1), CategoryLevel.CAT_5));
                 view.showLicensePurchased();
             }
             else if (license.getExpirationDate().isBefore(today)) {
@@ -81,28 +84,30 @@ public class RaceRegistrationController {
                     view.showCantRegister();
                     return false;
                 }
-                licenseRepo.updateCategory(racer.getUserId(), racer.getCategory());
+                licenseRepo.renewLicense(racer.getUserId());
                 view.showLicenseRenewed();
             }
         }
 
-        // --- 3. Category seat availability ---
+        //Category Seat Availability
         int seatsUsed = regRepo.countByRaceAndCategory(race.getRaceId(), racer.getCategory());
         if (seatsUsed >= race.getRaceMaxRegistrations()) {
             view.showCategoryFull();
             return false;
         }
 
-        // --- 4. Save ---
+        //Save
         Registration reg = new Registration(racer.getUserId(), race.getRaceId(), racer.getCategory());
         regRepo.insert(reg);
         view.showRegistrationSuccess();
         return true;
     }
 
-    // -----------------------------------------------------------------
-    // Menu-level messages (delegated to the view)
-    // -----------------------------------------------------------------
+    public void showAlreadyRegistered() {
+        System.out.println("you are already registered for this race");
+    }
+
+    // Menu messages for the view
     public void showInvalidChoice() { view.showInvalidChoice(); }
     public void showSignedOut()     { view.showSignedOut(); }
     public void showBye()           { view.showBye(); }

@@ -53,6 +53,10 @@ public class RaceRegistrationView {
         return sc.nextLine().trim().equalsIgnoreCase("yes");
     }
 
+    public void showAlreadyRegistered() {
+        System.out.println("you are already registered for this race");
+    }
+
     public void showLicenseRenewed() {
         System.out.println("License renewed");
     }

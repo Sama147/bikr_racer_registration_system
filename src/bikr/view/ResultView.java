@@ -26,4 +26,8 @@ public class ResultView {
     public void showPodiumsIncreased(int newPodiums) {
         System.out.println("Podiums increased to " + newPodiums);
     }
+
+    public void showUnofficialRaceNoPodium() {
+        System.out.println("(unofficial race — podium does not count toward category upgrade)");
+    }
 }

@@ -2,7 +2,7 @@ package bikr.view;
 
 import java.util.Scanner;
 
-/**
+/*
  * View for the login flow.
  * All input prompts and output messages for AuthController live here.
  */

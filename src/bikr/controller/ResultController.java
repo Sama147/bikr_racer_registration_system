@@ -1,17 +1,17 @@
 package bikr.controller;
 
+import bikr.model.Race;
 import bikr.model.Racer;
 import bikr.model.enums.CategoryLevel;
 import bikr.pattern.CategoryUpgradeService;
 import bikr.repository.UserRepository;
 import bikr.view.ResultView;
 
-/**
+/*
  * Simulates race day after a successful registration.
  * Awards 3rd place, increments podiums, and fires the Observer pattern
  * when the racer reaches the upgrade threshold.
- *
- * All output goes through ResultView.
+ * Only official races count toward category upgrades.
  */
 public class ResultController {
 
@@ -29,9 +29,15 @@ public class ResultController {
         this.view           = view;
     }
 
-    public void simulateRaceDay(Racer racer) {
+    public void simulateRaceDay(Racer racer, Race race) {
         view.showRaceDayStarted();
         view.showThirdPlace();
+
+        // Unofficial races do not count toward category upgrades
+        if (!race.isRaceOfficiality()) {
+            view.showUnofficialRaceNoPodium();
+            return;
+        }
 
         int newPodiums = racer.getCurrentPodiums() + 1;
 
