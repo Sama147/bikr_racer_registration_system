@@ -1,19 +1,21 @@
 package bikr.model;
 
 import bikr.model.enums.CategoryLevel;
-
 import java.time.LocalDate;
+
 
 public class License {
     private int licenseId;
     private int userId;
     private LocalDate expirationDate;
     private CategoryLevel category;
+    private LocalDate purchaseDate;
 
     public License() { }
 
     public License(int userId, LocalDate expirationDate, CategoryLevel category) {
         this.userId = userId;
+        this.purchaseDate = LocalDate.now();
         this.expirationDate = expirationDate;
         this.category = category;
     }
@@ -23,6 +25,9 @@ public class License {
 
     public int getUserId() { return userId; }
     public void setUserId(int userId) { this.userId = userId; }
+
+    public LocalDate getPurchaseDate() { return purchaseDate; }
+    public void setPurchaseDate(LocalDate purchaseDate) { this.purchaseDate = purchaseDate; }
 
     public LocalDate getExpirationDate() { return expirationDate; }
     public void setExpirationDate(LocalDate expirationDate) { this.expirationDate = expirationDate; }

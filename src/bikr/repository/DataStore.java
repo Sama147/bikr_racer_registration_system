@@ -68,7 +68,7 @@ public class DataStore {
         //Racer 4: extra CAT_3 racer for seat-limit testing of race 4 - no license
         Racer extra = new Racer("Ellie", "Ryerson", "er@gmail.com", "000000004", "er123");
         extra.setUserId(nextUserId());
-        extra.setCategory(CategoryLevel.CAT_2);
+        extra.setCategory(CategoryLevel.CAT_3);
         extra.setCurrentPodiums(0);
         users.add(extra);
 

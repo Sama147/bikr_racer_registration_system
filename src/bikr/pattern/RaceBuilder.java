@@ -29,7 +29,31 @@ public class RaceBuilder {
     public RaceBuilder setMaxRegistrations(int m) { this.raceMaxRegistrations = m; return this; }
     public RaceBuilder setLastDayRegistrations(LocalDate d) { this.raceLastDayRegistrations = d; return this; }
 
-    public Race build() { return new Race(this); }
+    public Race build() {
+        validate();
+        return new Race(this);
+    }
+
+    private void validate() {
+        if (raceName == null || raceName.isBlank())
+            throw new IllegalStateException("Race name required");
+        if (raceDate == null)
+            throw new IllegalStateException("Race date required");
+        if (raceType == null)
+            throw new IllegalStateException("Race type required");
+        if (raceRoute == null || raceRoute.isBlank())
+            throw new IllegalStateException("Race route required");
+        if (raceLocation == null || raceLocation.isBlank())
+            throw new IllegalStateException("Race location required");
+        if (raceMiles <= 0)
+            throw new IllegalStateException("Miles must be positive");
+        if (raceMaxRegistrations <= 0)
+            throw new IllegalStateException("Max registrations must be positive");
+        if (raceLastDayRegistrations == null)
+            throw new IllegalStateException("Last registration date required");
+        if (raceLastDayRegistrations.isAfter(raceDate))
+            throw new IllegalStateException("Registration deadline cannot be after race date");
+    }
 
     public String getRaceName() { return raceName; }
     public LocalDate getRaceDate() { return raceDate; }

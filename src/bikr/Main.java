@@ -96,7 +96,7 @@ public class Main {
         System.out.println("SUGGESTED DEMO FLOWS:");
         System.out.println("  - Nathaniel picks 3  -> license purchase flow");
         System.out.println("  - Illysia   picks 3  -> license renewal flow");
-        System.out.println("  - Vivian    picks 3  -> podium upgrade + observers fire");
+        System.out.println("  - Vivian    picks 3  -> podium upgrade + observers run");
         System.out.println("  - Anyone    picks 1  -> registration closed");
         System.out.println("  - Anyone    picks 2  -> category seats full");
         System.out.println("  - Nathaniel picks 4  -> unofficial race, no podium counted");

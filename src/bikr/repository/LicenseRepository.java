@@ -8,6 +8,10 @@ import java.time.LocalDate;
 public class LicenseRepository {
 
     public int insert(License license) {
+        License existing = findByUserId(license.getUserId());
+        if (existing != null) {
+            throw new IllegalStateException("User already has an active license");
+        }
         license.setLicenseId(DataStore.nextLicId());
         DataStore.licenses.add(license);
         return license.getLicenseId();

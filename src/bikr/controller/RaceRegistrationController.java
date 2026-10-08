@@ -16,9 +16,10 @@ import java.util.List;
 /*
  * Handles race selection and registration eligibility.
  * Check order:
+ *   0. Already registered?  (duplicate block)
  *   1. Registration deadline
- *   2. Official races require a valid license
- *   3. Category seat availability
+ *   2. Category seat availability
+ *   3. Official races require a valid license
  * All I/O goes through RaceRegistrationView.
  */
 public class RaceRegistrationController {
@@ -42,29 +43,37 @@ public class RaceRegistrationController {
         return view.showRaceMenu(raceRepo.findAll());
     }
 
-    //Maps a 1-based menu choice to a Race, or null if out of range.
+    // Maps a 1-based menu choice to a Race, or null if out of range.
     public Race getRaceByMenuChoice(int choice) {
         List<Race> races = raceRepo.findAll();
         if (choice < 1 || choice > races.size()) return null;
         return races.get(choice - 1);
     }
 
-    //Runs eligibility checks, then registers. Returns true if saved.
+    // Runs eligibility checks, then registers. Returns true if saved.
     public boolean registerForRace(Racer racer, Race race) {
 
-        //Already registered?
+        // 0. Already registered?
         if (regRepo.isAlreadyRegistered(racer.getUserId(), race.getRaceId())) {
             view.showAlreadyRegistered();
             return false;
         }
-        //Deadline
+
+        // 1. Deadline
         LocalDate today = LocalDate.now();
         if (today.isAfter(race.getRaceLastDayRegistrations())) {
             view.showRegistrationClosed();
             return false;
         }
 
-        //official race where a license is a must and needs to be valid
+        // 2. Category seat availability (checked BEFORE license purchase)
+        int seatsUsed = regRepo.countByRaceAndCategory(race.getRaceId(), racer.getCategory());
+        if (seatsUsed >= race.getRaceMaxRegistrations()) {
+            view.showCategoryFull();
+            return false;
+        }
+
+        // 3. Official race -> license must exist and be valid
         if (race.isRaceOfficiality()) {
             License license = licenseRepo.findByUserId(racer.getUserId());
 
@@ -75,7 +84,6 @@ public class RaceRegistrationController {
                 }
                 racer.setCurrentPodiums(0);
                 racer.setCategory(CategoryLevel.CAT_5);
-                // Then create the license using the racer's current category
                 licenseRepo.insert(new License(racer.getUserId(), today.plusYears(1), CategoryLevel.CAT_5));
                 view.showLicensePurchased();
             }
@@ -89,22 +97,11 @@ public class RaceRegistrationController {
             }
         }
 
-        //Category Seat Availability
-        int seatsUsed = regRepo.countByRaceAndCategory(race.getRaceId(), racer.getCategory());
-        if (seatsUsed >= race.getRaceMaxRegistrations()) {
-            view.showCategoryFull();
-            return false;
-        }
-
-        //Save
+        // 4. Save
         Registration reg = new Registration(racer.getUserId(), race.getRaceId(), racer.getCategory());
         regRepo.insert(reg);
         view.showRegistrationSuccess();
         return true;
-    }
-
-    public void showAlreadyRegistered() {
-        System.out.println("you are already registered for this race");
     }
 
     // Menu messages for the view
